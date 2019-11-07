@@ -1,7 +1,9 @@
 /*
 hostname=photos.adobe.io
 
-http-response ^https:\/\/photos\.adobe\.io\/v2\/accounts requires-body=1,script-path=Lightroom.js
+http-response ^https:\/\/photos\.adobe\.io\/v2\/accounts requires-body=1,script-path=https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/Lightroom.js
+
+转载From TG群组NobyDA Script
 */
 
 body = $response.body.replace(/while.{7}\n/, "");
