@@ -37,7 +37,7 @@ if (url.indexOf(path2) != -1) {
 }
 
 if (url.indexOf(path3) != -1) {
-  body['data']['sections'].splice(0, 1);
+  body['data']['sections'].splice(0, 2);
   body['data']['sections'][0]['items'].splice(3, 1);
   body['data']['sections'][0]['items'].splice(4, 3);
   body['data']['sections'].splice(1, 1);
