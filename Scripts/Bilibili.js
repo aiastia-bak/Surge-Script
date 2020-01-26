@@ -13,7 +13,7 @@ let url = $request.url;
 let body = JSON.parse($response.body);
 
 if (url.indexOf(path1) != -1) {
-  body['data']['tab'].splice(4, 10);
+  body['data']['tab'].splice(4);
   body['data']['top'].splice(0, 1);
   body['data']['bottom'].splice(3, 1);
 }
