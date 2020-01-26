@@ -7,24 +7,15 @@ const path6 = "/x/v2/reply/main?access_key";
 const path7 = "/x/v2/rank?access_key";
 const path8 = "/x/v2/show/popular/index";
 const path9 = "/xlive/app-room/v1/index/getInfoByRoom?access_key";
+const path10 = "/x/v2/account/teenagers/status?access_key";
 
 let url = $request.url;
 let body = JSON.parse($response.body);
 
 if (url.indexOf(path1) != -1) {
-  //Customize whitelist
-  let whitelist = ['直播', '推荐', '追番'];
-  body['data']['tab'].forEach((element, index) => {
-    if (!(whitelist.includes(element['name']))) {
-      body['data']['tab'].splice(index, 1);
-    }
-  })
-  body['data']['bottom'].forEach((element, index) => {
-    if (element['pos'] == 4) {
-      body['data']['bottom'].splice(index, 1);
-    }
-  })
-  delete body['data']['top'];
+  body['data']['tab'].splice(4, 10);
+  body['data']['top'].splice(0, 1);
+  body['data']['bottom'].splice(3, 1);
 }
 
 if (url.indexOf(path2) != -1) {
@@ -86,6 +77,10 @@ if (url.indexOf(path8) != -1) {
 
 if (url.indexOf(path9) != -1) {
   body['data']['activity_banner_info'] = null;
+}
+
+if (url.indexOf(path10) != -1) {
+  body['data']['teenagers_status'] = 0;
 }
 
 $done({
