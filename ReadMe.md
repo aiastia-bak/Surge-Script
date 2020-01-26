@@ -1,9 +1,10 @@
-自用Scripts。
+部分自用Scripts。
 
 部分自写部分整合。
 
 hosts部分自行添加。
 
+RUL-SET,https://raw.githubusercontent.com/primovist/ScriptsForSurge/master//Rule-Sets/ADs-Block.list,reject
 
 B站App去广告整合（N脚本合一）
 增加青少年模式询问移除
