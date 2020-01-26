@@ -1,0 +1,7 @@
+# > 知乎
+DOMAIN,sugar.zhihu.com
+URL-REGEX,^https:\/\/pic\d\.zhimg\.com\/70\/
+#URL-REGEX,https://(api|www).zhihu.com/(fringe|zst|commercial|real_time|ad-style-service|banners|market/popover|mqtt|.*(launch|featured-comment-ad|recommendations|community-ad|guide)|search/(top|tab|preset)|ab|adx|drama|api/v4/mcn)
+URL-REGEX,https://api.zhihu.com/(ab|adx|fringe|drama|zst|commercial|ad-style-service|market/popover|search/(top|tab|preset)|.*(guide|recommendations|extended|featured-comment-ad))
+URL-REGEX,https://www.zhihu.com/api/v4/mcn/
+AND,((USER-AGENT,osee2*), (NOT,((DOMAIN-SUFFIX,zhihu.com))), (NOT,((DOMAIN-SUFFIX,zhimg.com))))
