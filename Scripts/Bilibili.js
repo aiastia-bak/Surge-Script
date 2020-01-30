@@ -8,6 +8,7 @@ const path7 = "/x/v2/rank?access_key";
 const path8 = "/x/v2/show/popular/index";
 const path9 = "/xlive/app-room/v1/index/getInfoByRoom?access_key";
 const path10 = "/x/v2/account/teenagers/status?access_key";
+const path11 = "/x/v2/account/mine/ipad?access_key";
 
 let url = $request.url;
 let body = JSON.parse($response.body);
@@ -181,6 +182,47 @@ if (url.indexOf(path9) != -1) {
 if (url.indexOf(path10) != -1) {
   body['data']['teenagers_status'] = 0;
 }
+
+if (url.indexOf(path11) != -1) {
+  body['data']['ipad_upper_sections'] = [{
+      "title": "投稿",
+      "icon": "http://i0.hdslb.com/bfs/archive/86a8fdc40f4a5842d9b6454dead1f049db64ffc5.png",
+      "uri": "/uper/user_center/add_archive"
+    },
+    {
+      "title": "创作中心",
+      "icon": "http://i0.hdslb.com/bfs/archive/f4da9a7940d29f6b01676b039f685053f77615fd.png",
+      "uri": "/uper/homevc"
+    },
+    {
+      "title": "稿件管理",
+      "icon": "http://i0.hdslb.com/bfs/archive/eec4a9f65dad19b5e92130d236ba3bf46248309e.png",
+      "uri": "/uper/user_center/archive_list"
+    }
+  ];
+  body['data']['ipad_sections'] = [{
+      "title": "离线缓存",
+      "icon": "http://i0.hdslb.com/bfs/archive/6072db62838fdfabd6123cdb45bafc2d0fd3907c.png",
+      "uri": "bilibili://user_center/download"
+    },
+    {
+      "title": "我的收藏",
+      "icon": "http://i0.hdslb.com/bfs/archive/a1a5aa50956e0c7d75f6f89bb4b93da340bf4a0d.png",
+      "uri": "bilibili://user_center/favourite"
+    },
+    {
+      "title": "稍后再看",
+      "icon": "http://i0.hdslb.com/bfs/archive/3fa793dda7a6236d03cf0dec8507bbffe1d4e8ae.png",
+      "uri": "bilibili://user_center/watch_later"
+    },
+    {
+      "title": "设置",
+      "icon": "http://i0.hdslb.com/bfs/archive/3aa6fa00d4718be2a9a4f0c608ea04ddb7407d15.png",
+      "uri": "bilibili://user_center/setting"
+    }
+  ]
+}
+
 
 $done({
   body: JSON.stringify(body)
