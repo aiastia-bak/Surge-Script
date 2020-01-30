@@ -201,9 +201,9 @@ if (url.indexOf(path11) != -1) {
     }
   ];
   body['data']['ipad_sections'] = [{
-      "title": "离线缓存",
-      "icon": "http://i0.hdslb.com/bfs/archive/6072db62838fdfabd6123cdb45bafc2d0fd3907c.png",
-      "uri": "bilibili://user_center/download"
+      "title": "历史记录",
+      "icon": "http://i0.hdslb.com/bfs/archive/cdfb36f4835f3f09f8c9d2fef20c025c84d96a66.png",
+      "uri": "bilibili://user_center/history"
     },
     {
       "title": "我的收藏",
@@ -216,13 +216,17 @@ if (url.indexOf(path11) != -1) {
       "uri": "bilibili://user_center/watch_later"
     },
     {
+      "title": "我的消息",
+      "icon": "http://i0.hdslb.com/bfs/archive/b2b4e1c010ea57cfe600c312b11c2909d77b46f1.png",
+      "uri": "bilibili://link/im_home"
+    },
+    {
       "title": "设置",
       "icon": "http://i0.hdslb.com/bfs/archive/3aa6fa00d4718be2a9a4f0c608ea04ddb7407d15.png",
       "uri": "bilibili://user_center/setting"
     }
   ]
 }
-
 
 $done({
   body: JSON.stringify(body)
