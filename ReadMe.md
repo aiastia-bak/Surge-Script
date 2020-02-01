@@ -16,7 +16,7 @@ http-response ^https?:\/\/api\.zhihu\.com\/(moments\?(action|feed_type)|topstory
 ```
 丁香园用药助手解锁订阅（非医务工作者无需此App）
 ```
-http-response ^https?:\/\/newdrugs\.dxy\.cn\/app\/user\/(p(ay\/checkIntroOfferPeriod|ro\/stat)|init)\? requires-body=1,script-path=https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/DingxiangDrugs.js
+http-response ^https?:\/\/newdrugs\.dxy\.cn\/app\/user\/(p(ay\/checkIntroOfferPeriod|ro\/stat)|init)\? requires-body=1,script-path= https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/DingXiangDrugs.js
 ```
 Lightroom解锁订阅（越南佬）
 ```
