@@ -3,11 +3,12 @@ const path2 = "/topstory/recommend";
 const path3 = "/questions/";
 const path4 = "/market/header";
 const path5 = "/people";
+const path6 = "/moments/recommend?";
 
 let url = $request.url;
 let body = JSON.parse($response.body);
 
-if (url.indexOf(path1) != -1) {
+if (url.indexOf(path1) != -1 || url.indexOf(path6) != -1) {
   body['data'].forEach((element, index) => {
     if (element.hasOwnProperty('adjson')) {
       body['data'].splice(index, 1);
