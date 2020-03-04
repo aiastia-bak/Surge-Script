@@ -1,90 +1,269 @@
-const $tool = tool();
-const $base64 = new Base64();
-const consoleLog = false;
-const path1 = "/amdc/mobileDispatch";
-const path2 = "/gw/mtop.taobao.detail.getdetail";
+const $tool = new Tool()
+const $base64 = new Base64()
+const consoleLog = false
+const path1 = "/amdc/mobileDispatch"
+const path2 = "/gw/mtop.taobao.detail.getdetail"
 
-let url = $request.url;
-let body = $response.body;
+let url = $request.url
+let body = $response.body
 
 if (url.indexOf(path1) != -1) {
-  body = JSON.parse($base64.decode(body));
-  let dns = body.dns;
-  if (dns && dns.length > 0) {
-    let i = dns.length;
-    while (i--) {
-      const element = dns[i];
-      let host = "trade-acs.m.taobao.com";
-      if (element.host == host) {
-        element.ips = [];
-        if (consoleLog) console.log(JSON.stringify(element))
+  if ($tool.isResponse) {
+    body = JSON.parse($base64.decode(body))
+    let dns = body.dns
+    if (dns && dns.length > 0) {
+      let i = dns.length;
+      while (i--) {
+        const element = dns[i];
+        let host = "trade-acs.m.taobao.com"
+        if (element.host == host) {
+          element.ips = []
+          if (consoleLog) console.log(JSON.stringify(element))
+        }
       }
     }
+    body = $base64.encode(JSON.stringify(body))
+    $done({
+      body
+    })
+  } else {
+    let json = Qs2Json(body)
+    let domain = json.domain.split(" ")
+    let i = domain.length;
+    while (i--) {
+      const block = "trade-acs.m.taobao.com"
+      const element = domain[i];
+      if (element == block) {
+        domain.splice(i, 1);
+      }
+    }
+    json.domain = domain.join(" ")
+    body = Json2Qs(json)
+    $done({
+      body
+    })
   }
-  $done({
-    body: $base64.encode(JSON.stringify(body))
-  })
 }
 
 if (url.indexOf(path2) != -1) {
-  body = JSON.parse(body);
-  let apiStack = body.data.apiStack[0];
-  let value = JSON.parse(apiStack.value);
-  if (value.global) {
-    let tradeConsumerProtection = value.global.data.tradeConsumerProtection;
-    if (!tradeConsumerProtection) {
-      value.global.data["tradeConsumerProtection"] = customTradeConsumerProtection();
-    }
-    tradeConsumerProtection = value.global.data.tradeConsumerProtection;
-    let service = tradeConsumerProtection.tradeConsumerService.service;
-    let nonService = tradeConsumerProtection.tradeConsumerService.nonService;
-
-    let item = body.data.item;
-    let shareUrl = `https://item.taobao.com/item.htm?id=${item.itemId}`;
-
-    requestPrice(shareUrl, function(data) {
-      if (data) {
-        let historyItem = customItem();
-        if (data.ok == 1 && data.single) {
-          const lower = lowerMsgs(data.single);
-          const result = historyItems(data.single);
-          const tbitems = result[1];
-          service.items = service.items.concat(nonService.items);
-          historyItem.desc = lower[0];
-          historyItem.title = lower[1];
-          service.items.unshift(historyItem);
-          nonService.title = "价格走势";
-          nonService.items = tbitems;
+  body = JSON.parse(body)
+  let item = body.data.item
+  let shareUrl = `https://item.taobao.com/item.htm?id=${item.itemId}`
+  requestPrice(shareUrl, function(data) {
+    if (data) {
+      if (body.data.apiStack) {
+        let apiStack = body.data.apiStack[0]
+        let value = JSON.parse(apiStack.value)
+        let tradeConsumerProtection = null
+        let consumerProtection = null
+        let trade = null
+        if (value.global) {
+          tradeConsumerProtection = value.global.data.tradeConsumerProtection
+          consumerProtection = value.global.data.consumerProtection
+          trade = value.global.data.trade
+        } else {
+          tradeConsumerProtection = value.tradeConsumerProtection
+          consumerProtection = value.consumerProtection
+          trade = value.trade
         }
-        if (data.ok == 0 && data.msg.length > 0) {
-          historyItem.desc = data.msg;
-          service.items.push(historyItem);
+        if (trade && trade.useWap == "true") {
+          $done({
+            body
+          })
+          sendNotify(data, shareUrl)
+        } else {
+          if (tradeConsumerProtection) {
+            tradeConsumerProtection = setTradeConsumerProtection(data, tradeConsumerProtection)
+          } else {
+            let vertical = value.vertical
+            if (vertical && vertical.hasOwnProperty("tmallhkDirectSale")) {
+              value["tradeConsumerProtection"] = customTradeConsumerProtection()
+              value.tradeConsumerProtection = setTradeConsumerProtection(data, value.tradeConsumerProtection)
+            } else {
+              consumerProtection = setConsumerProtection(data, consumerProtection)
+            }
+          }
+          apiStack.value = JSON.stringify(value)
+          $done({
+            body: JSON.stringify(body)
+          })
         }
-        apiStack.value = JSON.stringify(value);
-        $done({
-          body: JSON.stringify(body)
-        });
       } else {
         $done({
           body
-        });
+        })
+        sendNotify(data, shareUrl)
       }
-    })
-  } else {
-    $done({
-      body
-    });
+    } else {
+      $done({
+        body
+      })
+    }
+  })
+}
+
+function sendNotify(data, shareUrl) {
+  if (data.ok == 1 && data.single) {
+    const lower = lowerMsgs(data.single)[0]
+    const detail = priceSummary(data)[1]
+    const tip = data.PriceRemark.Tip + "（仅供参考）"
+    $tool.notify("", "", `〽️历史${lower} ${tip}\n${detail}\n\n👉查看详情：http://tool.manmanbuy.com/historyLowest.aspx?url=${encodeURI(shareUrl)}`)
+  }
+  if (data.ok == 0 && data.msg.length > 0) {
+    $tool.notify("", "", `⚠️ ${data.msg}`)
   }
 }
 
-function requestPrice(shareUrl, callback) {
-  let options = {
+function setConsumerProtection(data, consumerProtection) {
+  let basicService = consumerProtection.serviceProtection.basicService
+  let items = consumerProtection.items
+  if (data.ok == 1 && data.single) {
+    const lower = lowerMsgs(data.single)
+    const tip = data.PriceRemark.Tip
+    const summary = priceSummary(data)[1]
+    const item = customItem(lower[1], [`${lower[0]} ${tip}（仅供参考）\n${summary}`])
+    basicService.services.unshift(item)
+    items.unshift(item)
+  }
+  if (data.ok == 0 && data.msg.length > 0) {
+    let item = customItem("暂无历史价格", [data.msg])
+    basicService.services.unshift(item)
+    items.unshift(item)
+  }
+  return consumerProtection
+}
+
+function setTradeConsumerProtection(data, tradeConsumerProtection) {
+  let service = tradeConsumerProtection.tradeConsumerService.service
+  if (data.ok == 1 && data.single) {
+    const lower = lowerMsgs(data.single)
+    const tip = data.PriceRemark.Tip
+    const tbitems = priceSummary(data)[0]
+    const item = customItem(lower[1], `${lower[0]} ${tip}（仅供参考）`)
+    let nonService = tradeConsumerProtection.tradeConsumerService.nonService
+    service.items = service.items.concat(nonService.items)
+    nonService.title = "价格详情"
+    nonService.items = tbitems
+    service.items.unshift(item)
+  }
+  if (data.ok == 0 && data.msg.length > 0) {
+    service.items.unshift(customItem("暂无历史价格", data.msg))
+  }
+  return tradeConsumerProtection
+}
+
+function lowerMsgs(data) {
+  const lower = data.lowerPriceyh
+  const lowerDate = dateFormat(data.lowerDateyh)
+  const lowerMsg = "最低到手价：¥" + String(lower) + `（${lowerDate}）`
+  const lowerMsg1 = "历史最低¥" + String(lower)
+  return [lowerMsg, lowerMsg1]
+}
+
+function priceSummary(data) {
+  let tbitems = []
+  let summary = ""
+  let listPriceDetail = data.PriceRemark.ListPriceDetail
+  listPriceDetail.pop()
+  let list = listPriceDetail.concat(historySummary(data.single))
+  list.forEach((item, index) => {
+    if (index == 2) {
+      item.Name = "双十一价格"
+    } else if (index == 3) {
+      item.Name = "六一八价格"
+    } else if (index == 4) {
+      item.Name = "三十天最低"
+    }
+    summary += `\n${item.Name}${getSpace(4)}${item.Price}${getSpace(4)}${item.Date}${getSpace(4)}${item.Difference}`
+    let summaryItem = `${item.Name}${getSpace(4)}${item.Price}${getSpace(4)}${item.Date}${getSpace(4)}${item.Difference}`
+    tbitems.push(customItem(summaryItem))
+  })
+  return [tbitems, summary]
+}
+
+function historySummary(single) {
+  const rexMatch = /\[.*?\]/g;
+  const rexExec = /\[(.*),(.*),"(.*)"\]/;
+  let currentPrice, lowest60, lowest180, lowest360
+  let list = single.jiagequshiyh.match(rexMatch);
+  list = list.reverse().slice(0, 360);
+  list.forEach((item, index) => {
+    if (item.length > 0) {
+      const result = rexExec.exec(item);
+      const dateUTC = new Date(eval(result[1]));
+      const date = dateUTC.format("yyyy-MM-dd");
+      let price = parseFloat(result[2]);
+      if (index == 0) {
+        currentPrice = price
+        lowest60 = {
+          Name: "六十天最低",
+          Price: `¥${String(price)}`,
+          Date: date,
+          Difference: difference(currentPrice, price),
+          price
+        }
+        lowest180 = {
+          Name: "一百八最低",
+          Price: `¥${String(price)}`,
+          Date: date,
+          Difference: difference(currentPrice, price),
+          price
+        }
+        lowest360 = {
+          Name: "三百六最低",
+          Price: `¥${String(price)}`,
+          Date: date,
+          Difference: difference(currentPrice, price),
+          price
+        }
+      }
+      if (index < 60 && price <= lowest60.price) {
+        lowest60.price = price
+        lowest60.Price = `¥${String(price)}`
+        lowest60.Date = date
+        lowest60.Difference = difference(currentPrice, price)
+      }
+      if (index < 180 && price <= lowest180.price) {
+        lowest180.price = price
+        lowest180.Price = `¥${String(price)}`
+        lowest180.Date = date
+        lowest180.Difference = difference(currentPrice, price)
+      }
+      if (index < 360 && price <= lowest360.price) {
+        lowest360.price = price
+        lowest360.Price = `¥${String(price)}`
+        lowest360.Date = date
+        lowest360.Difference = difference(currentPrice, price)
+      }
+    }
+  });
+  return [lowest60, lowest180, lowest360];
+}
+
+function difference(currentPrice, price) {
+  let difference = sub(currentPrice, price)
+  if (difference == 0) {
+    return "-"
+  } else {
+    return `${difference > 0 ? "↑" : "↓"}${String(difference)}`
+  }
+}
+
+function sub(num1, num2) {
+  const num1Digits = (num1.toString().split('.')[1] || '').length;
+  const num2Digits = (num2.toString().split('.')[1] || '').length;
+  const baseNum = Math.pow(10, Math.max(num1Digits, num2Digits));
+  return (num1 * baseNum - num2 * baseNum) / baseNum;
+}
+
+function requestPrice(share_url, callback) {
+  const options = {
     url: "https://apapia-history.manmanbuy.com/ChromeWidgetServices/WidgetServices.ashx",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
       "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 13_1_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 - mmbWebBrowse - ios"
     },
-    body: "methodName=getBiJiaInfo_wxsmall&p_url=" + encodeURIComponent(shareUrl)
+    body: "methodName=getHistoryTrend&p_url=" + encodeURIComponent(share_url)
   }
   $tool.post(options, function(error, response, data) {
     if (!error) {
@@ -95,48 +274,6 @@ function requestPrice(shareUrl, callback) {
       if (consoleLog) console.log("Error:\n" + error);
     }
   })
-}
-
-function lowerMsgs(data) {
-  const lower = data.lowerPriceyh;
-  const lowerDate = dateFormat(data.lowerDateyh);
-  const lowerMsg = "历史最低到手价:   ¥" + String(lower) + "   " + lowerDate;
-  const curret_msg = (data.currentPriceStatus ? "   当前价格" + data.currentPriceStatus : "") + "   (仅供参考)";
-  const lower1 = lowerMsg + curret_msg;
-  const lower2 = "历史最低¥" + String(lower);
-  return [lower1, lower2];
-}
-
-function historyItems(data) {
-  const rexMatch = /\[.*?\]/g;
-  const rexExec = /\[(.*),(.*),"(.*)"\]/;
-  const list = data.jiagequshiyh.match(rexMatch);
-  let tbitems = [];
-  let startDate = "";
-  let endDate = "";
-  list.reverse().forEach((item, index) => {
-    if (item.length > 0) {
-      const result = rexExec.exec(item);
-      const dateUTC = new Date(eval(result[1]));
-      const date = dateUTC.format("yyyy-MM-dd");
-      if (index == 0) {
-        endDate = date;
-      }
-      if (index == list.length - 1) {
-        startDate = date;
-      }
-      let price = result[2];
-      price = "¥" + String(parseFloat(price));
-      const msg = date + getSpace(50 - date.length) + price;
-      tbitem = {
-        icon: "https://s2.ax1x.com/2020/01/03/lU2AYD.png",
-        title: msg
-      }
-      tbitems.push(tbitem);
-    }
-  });
-  const dateMsg = `(${startDate} ~ ${endDate})`;
-  return [dateMsg, tbitems];
 }
 
 function dateFormat(cellval) {
@@ -154,11 +291,12 @@ function getSpace(length) {
   return blank;
 }
 
-function customItem() {
+function customItem(title, desc) {
   return {
-    icon: "https://s2.ax1x.com/2020/01/03/lU2Pw6.png",
-    title: "历史价格",
-    desc: ""
+    icon: "https://s2.ax1x.com/2020/02/16/3STeIJ.png",
+    title: title,
+    name: title,
+    desc: desc
   }
 }
 
@@ -179,6 +317,29 @@ function customTradeConsumerProtection() {
     "url": "https://h5.m.taobao.com/app/detailsubpage/consumer/index.js",
     "type": "0"
   }
+}
+
+function Qs2Json(url) {
+  url = url == null ? window.location.href : url;
+  let search = url.substring(url.lastIndexOf("?") + 1);
+  let body = {};
+  let reg = /([^?&=]+)=([^?&=]*)/g;
+  search.replace(reg, function(rs, $1, $2) {
+    let name = decodeURIComponent($1);
+    let val = decodeURIComponent($2);
+    val = String(val);
+    body[name] = val;
+    return rs;
+  });
+  return body;
+}
+
+function Json2Qs(json) {
+  let temp = [];
+  for (let k in json) {
+    temp.push(k + "=" + json[k]);
+  }
+  return temp.join("&");
 }
 
 Array.prototype.insert = function(index, item) {
@@ -212,55 +373,82 @@ Date.prototype.format = function(fmt) {
   return fmt;
 }
 
-function tool() {
-  const isSurge = typeof $httpClient != "undefined"
-  const isQuanX = typeof $task != "undefined"
-  const notify = (title, subtitle, message) => {
-    if (isQuanX) $notify(title, subtitle, message)
-    if (isSurge) $notification.post(title, subtitle, message)
+function Tool() {
+  _node = (() => {
+    if (typeof require == "function") {
+      const request = require('request')
+      return ({
+        request
+      })
+    } else {
+      return (null)
+    }
+  })()
+  _isSurge = typeof $httpClient != "undefined"
+  _isQuanX = typeof $task != "undefined"
+  this.isSurge = _isSurge
+  this.isQuanX = _isQuanX
+  this.isResponse = typeof $response != "undefined"
+  this.notify = (title, subtitle, message) => {
+    if (_isQuanX) $notify(title, subtitle, message)
+    if (_isSurge) $notification.post(title, subtitle, message)
+    if (_node) console.log(JSON.stringify({
+      title,
+      subtitle,
+      message
+    }));
   }
-  const setCache = (value, key) => {
-    if (isQuanX) return $prefs.setValueForKey(value, key)
-    if (isSurge) return $persistentStore.write(value, key)
+  this.write = (value, key) => {
+    if (_isQuanX) return $prefs.setValueForKey(value, key)
+    if (_isSurge) return $persistentStore.write(value, key)
   }
-  const getCache = (key) => {
-    if (isQuanX) return $prefs.valueForKey(key)
-    if (isSurge) return $persistentStore.read(key)
+  this.read = (key) => {
+    if (_isQuanX) return $prefs.valueForKey(key)
+    if (_isSurge) return $persistentStore.read(key)
   }
-  const get = (options, callback) => {
-    if (isQuanX) {
+  this.get = (options, callback) => {
+    if (_isQuanX) {
       if (typeof options == "string") options = {
         url: options
       }
       options["method"] = "GET"
       $task.fetch(options).then(response => {
-        response["status"] = response.statusCode
-        callback(null, response, response.body)
+        callback(null, _status(response), response.body)
       }, reason => callback(reason.error, null, null))
     }
-    if (isSurge) $httpClient.get(options, callback)
+    if (_isSurge) $httpClient.get(options, (error, response, body) => {
+      callback(error, _status(response), body)
+    })
+    if (_node) _node.request(options, (error, response, body) => {
+      callback(error, _status(response), body)
+    })
   }
-  const post = (options, callback) => {
-    if (isQuanX) {
+  this.post = (options, callback) => {
+    if (_isQuanX) {
       if (typeof options == "string") options = {
         url: options
       }
       options["method"] = "POST"
       $task.fetch(options).then(response => {
-        response["status"] = response.statusCode
-        callback(null, response, response.body)
+        callback(null, _status(response), response.body)
       }, reason => callback(reason.error, null, null))
     }
-    if (isSurge) $httpClient.post(options, callback)
+    if (_isSurge) $httpClient.post(options, (error, response, body) => {
+      callback(error, _status(response), body)
+    })
+    if (_node) _node.request.post(options, (error, response, body) => {
+      callback(error, _status(response), body)
+    })
   }
-  return {
-    isQuanX,
-    isSurge,
-    notify,
-    setCache,
-    getCache,
-    get,
-    post
+  _status = (response) => {
+    if (response) {
+      if (response.status) {
+        response["statusCode"] = response.status
+      } else if (response.statusCode) {
+        response["status"] = response.statusCode
+      }
+    }
+    return response
   }
 }
 
@@ -334,6 +522,7 @@ function Base64() {
         utftext += String.fromCharCode(((c >> 6) & 63) | 128);
         utftext += String.fromCharCode((c & 63) | 128);
       }
+
     }
     return utftext;
   }

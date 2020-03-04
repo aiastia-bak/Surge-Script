@@ -30,7 +30,7 @@ Photoshop解锁订阅（越南大佬）
 ```
 http-response ^https://lcs-mobile-cops.adobe.io/mobile_profile/nul/v1 requires-body=1,script-path=https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/Photoshop.js
 ```
-淘宝历史价格，二合一修正
+淘宝历史价格，二合一修正（yichahucha）
 ```
 http-response ^https?://(amdc|trade-acs)\.m\.taobao\.com/(amdc/mobileDispatch|gw/mtop\.taobao\.detail\.getdetail) requires-body=1,script-path=https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/TaobaoPrice.js
 ```
