@@ -8,7 +8,7 @@ RUL-SET,https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Rule-
 ```
 什么值得买去广告
 ```
-http-response ^https?:\/\/homepage-api\.smzdm\.com\/home\?ad requires-body=1,max-size=-1,script-path=https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/SMZDM.js
+http-response ^https?:\/\/h(aojia|omepage)-api\.smzdm\.com\/home requires-body=1,max-size=-1,script-path=https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/SMZDM.js
 ```
 B站App去广告整合（N脚本合一）
 ```
