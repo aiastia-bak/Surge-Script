@@ -6,6 +6,10 @@ hosts部分自行添加。
 ```
 RUL-SET,https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Rule-Sets/ADs-Block.rulesets,reject
 ```
+什么值得买去广告
+```
+http-response ^https?:\/\/homepage-api\.smzdm\.com\/home\?ad requires-body=1,max-size=-1,script-path=https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/SMZDM.js
+```
 B站App去广告整合（N脚本合一）
 ```
 http-response ^https?:\/\/ap(i|p).(live.)?bilibili.com\/x(live)?\/(resource\/show\/tab|v2\/(reply\/main|view\/material|account\/(mine|teenagers\/status)|view|feed\/index|show\/popular\/index|rank)|app-room/v1/index/getInfoByRoom)\?access_key requires-body=1,max-size=-1,script-path=https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/Bilibili.js
@@ -18,11 +22,11 @@ http-response ^https?:\/\/api\.zhihu\.com\/(moments\?(action|feed_type)|topstory
 ```
 http-response ^https?:\/\/newdrugs\.dxy\.cn\/app\/user\/(p(ay\/checkIntroOfferPeriod|ro\/stat)|init)\? requires-body=1,script-path=https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/DingXiangDrugs.js
 ```
-Lightroom解锁订阅（越南佬）
+Lightroom解锁订阅（越南大佬）
 ```
 http-response ^https:\/\/photos\.adobe\.io\/v2\/accounts requires-body=1,script-path=https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/Lightroom.js
 ```
-Photoshop解锁订阅
+Photoshop解锁订阅（越南大佬）
 ```
 http-response ^https://lcs-mobile-cops.adobe.io/mobile_profile/nul/v1 requires-body=1,script-path=https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/Photoshop.js
 ```

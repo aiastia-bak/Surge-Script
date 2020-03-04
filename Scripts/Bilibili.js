@@ -14,7 +14,7 @@ let url = $request.url;
 let body = JSON.parse($response.body);
 
 if (url.indexOf(path1) != -1) {
-  body['data']['tab'] = [{
+  body.data.tab = [{
       "id": 39,
       "name": "直播",
       "uri": "bilibili://live/home",
@@ -51,7 +51,7 @@ if (url.indexOf(path1) != -1) {
       "pos": 5,
     },
   ]
-  body['data']['top'] = [{
+  body.data.top = [{
     "id": 176,
     "icon": "http://i0.hdslb.com/bfs/archive/d43047538e72c9ed8fd8e4e34415fbe3a4f632cb.png",
     "name": "消息",
@@ -59,7 +59,7 @@ if (url.indexOf(path1) != -1) {
     "tab_id": "消息Top",
     "pos": 1
   }]
-  body['data']['bottom'] = [{
+  body.data.bottom = [{
       "id": 177,
       "icon": "http://i0.hdslb.com/bfs/archive/63d7ee88d471786c1af45af86e8cb7f607edf91b.png",
       "icon_selected": "http://i0.hdslb.com/bfs/archive/e5106aa688dc729e7f0eafcbb80317feb54a43bd.png",
@@ -100,15 +100,15 @@ if (url.indexOf(path1) != -1) {
 
 if (url.indexOf(path2) != -1) {
   let blacklist = [];
-  body['data']['items'].forEach((element, index) => {
-    if (element.hasOwnProperty('ad_info') || element.hasOwnProperty('banner_item') || element['card_type'] != 'small_cover_v2' ||blacklist.includes(element['args']['up_name'])) {
-      body['data']['items'].splice(index, 1);
+  body.data.items.forEach((element, index) => {
+    if (element.hasOwnProperty('ad_info') || element.hasOwnProperty('banner_item') || element.card_type != 'small_cover_v2' || blacklist.includes(element.args.up_name)) {
+      body.data.items.splice(index, 1);
     }
   })
 }
 
 if (url.indexOf(path3) != -1) {
-  body['data']['sections'] = [{
+  body.data.sections = [{
     "title": "个人中心",
     "items": [{
         "title": "历史记录",
@@ -131,22 +131,22 @@ if (url.indexOf(path3) != -1) {
         "uri": "bilibili://uper/homevc"
       },
       {
-      "title": "投稿",
-      "icon": "http://i0.hdslb.com/bfs/archive/86a8fdc40f4a5842d9b6454dead1f049db64ffc5.png",
-      "uri": "/uper/user_center/add_archive"
+        "title": "投稿",
+        "icon": "http://i0.hdslb.com/bfs/archive/86a8fdc40f4a5842d9b6454dead1f049db64ffc5.png",
+        "uri": "/uper/user_center/add_archive"
       }
     ]
   }]
 }
 
 if (url.indexOf(path4) != -1) {
-  if (body['data'].hasOwnProperty('relates')) {
-    body['data']['relates'].forEach((element, index) => {
+  if (body.data.hasOwnProperty('relates')) {
+    body.data.relates.forEach((element, index) => {
       if (element.hasOwnProperty('is_ad') || !element.hasOwnProperty('aid')) {
-        body['data']['relates'].splice(index, 1);
+        body.data.relates.splice(index, 1);
       }
     })
-    delete body['data']['cms'];
+    delete body.data.cms;
   }
 }
 
@@ -156,16 +156,16 @@ if (url.indexOf(path5) != -1) {
 
 if (url.indexOf(path6) != -1) {
   if (body.hasOwnProperty('data')) {
-    delete body['data']['notice'];
+    delete body.data.notice;
   }
 }
 
 if (url.indexOf(path7) != -1) {
   //Customize blacklist
   let blacklist = [];
-  body['data'].forEach((element, index) => {
-    if (blacklist.includes(element['name'])) {
-      body['data'].splice(index, 1);
+  body.data.forEach((element, index) => {
+    if (blacklist.includes(element.name)) {
+      body.data.splice(index, 1);
     }
   })
 }
@@ -173,23 +173,23 @@ if (url.indexOf(path7) != -1) {
 if (url.indexOf(path8) != -1) {
   //Customize blacklist
   let blacklist = [];
-  body['data'].forEach((element, index) => {
-    if (blacklist.includes(element['right_desc_1']) || element["card_type"] !== "small_cover_v5") {
-      body['data'].splice(index, 1);
+  body.data.forEach((element, index) => {
+    if (blacklist.includes(element.right_desc_1) || element.card_type !== "small_cover_v5") {
+      body.data.splice(index, 1);
     }
   })
 }
 
 if (url.indexOf(path9) != -1) {
-  body['data']['activity_banner_info'] = null;
+  body.data.activity_banner_info = null;
 }
 
 if (url.indexOf(path10) != -1) {
-  body['data']['teenagers_status'] = 0;
+  body.data.teenagers_status = 0;
 }
 
 if (url.indexOf(path11) != -1) {
-  body['data']['ipad_upper_sections'] = [{
+  body.data.ipad_upper_sections = [{
       "title": "投稿",
       "icon": "http://i0.hdslb.com/bfs/archive/86a8fdc40f4a5842d9b6454dead1f049db64ffc5.png",
       "uri": "/uper/user_center/add_archive"
@@ -205,7 +205,7 @@ if (url.indexOf(path11) != -1) {
       "uri": "/uper/homevc"
     }
   ];
-  body['data']['ipad_sections'] = [{
+  body.data.ipad_sections = [{
       "title": "历史记录",
       "icon": "http://i0.hdslb.com/bfs/archive/cdfb36f4835f3f09f8c9d2fef20c025c84d96a66.png",
       "uri": "bilibili://user_center/history"
