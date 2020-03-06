@@ -100,11 +100,26 @@ if (url.indexOf(path1) != -1) {
 
 if (url.indexOf(path2) != -1) {
   let blacklist = [];
-  body.data.items.forEach((element, index) => {
-    if (element.hasOwnProperty('ad_info') || element.hasOwnProperty('banner_item') || element.card_type != 'small_cover_v2' || blacklist.includes(element.args.up_name)) {
-      body.data.items.splice(index, 1);
+  body.data.items = body.data.items.filter(function(item) {
+    if (['ad_web_s', 'ad_web', 'live', 'banner', 'search_subscribe'].includes(item.card_goto)) {
+      return false;
     }
-  })
+    if (item.hasOwnProperty('ad_info')) {
+      return false;
+    }
+    if (blacklist.includes(item.args.up_name)) {
+      return false;
+    }
+    if (blacklist.includes(item.args.rname)) {
+      return false;
+    }
+    for (let word of blacklist) {
+      if (item.title.indexOf(word) != -1) {
+        return false;
+      }
+    }
+    return true;
+  });
 }
 
 if (url.indexOf(path3) != -1) {
@@ -141,14 +156,16 @@ if (url.indexOf(path3) != -1) {
 
 if (url.indexOf(path4) != -1) {
   if (body.data.hasOwnProperty('relates')) {
-    body.data.relates.forEach((element, index) => {
-      if (element.hasOwnProperty('is_ad') || !element.hasOwnProperty('aid')) {
-        body.data.relates.splice(index, 1);
+    body.data.relates = body.data.relates.filter(function(item) {
+      if (item.hasOwnProperty('is_ad')) {
+        return false;
       }
-    })
-    delete body.data.cms;
+      return true;
+    });
   }
+  delete body.data.cms;
 }
+
 
 if (url.indexOf(path5) != -1) {
   body.data = null;
@@ -161,23 +178,23 @@ if (url.indexOf(path6) != -1) {
 }
 
 if (url.indexOf(path7) != -1) {
-  //Customize blacklist
   let blacklist = [];
-  body.data.forEach((element, index) => {
-    if (blacklist.includes(element.name)) {
-      body.data.splice(index, 1);
+  body.data = body.data.filter(function(item) {
+    if (blacklist.includes(item.name)) {
+      return false;
     }
-  })
+    return true;
+  });
 }
 
 if (url.indexOf(path8) != -1) {
-  //Customize blacklist
   let blacklist = [];
-  body.data.forEach((element, index) => {
-    if (blacklist.includes(element.right_desc_1) || element.card_type !== "small_cover_v5") {
-      body.data.splice(index, 1);
+  body.data = body.data.filter(function(item) {
+    if (blacklist.includes(item.right_desc_1) || item.card_type !== "small_cover_v5") {
+      return false;
     }
-  })
+    return true;
+  });
 }
 
 if (url.indexOf(path9) != -1) {

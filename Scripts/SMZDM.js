@@ -10,10 +10,11 @@ if (body.data.hasOwnProperty('big_banner')) {
 if (body.data.hasOwnProperty('notice')) {
   delete body.data.notice;
 }
-body.data.rows.forEach((element, index) => {
+body.data.rows = body.data.rows.filter(function(item) {
   if (element.article_channel_id == -1) {
-    body.data.rows.splice(index, 1);
+    return false;
   }
+  return true;
 });
 $done({
   body: JSON.stringify(body)

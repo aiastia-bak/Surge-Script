@@ -9,29 +9,32 @@ let url = $request.url;
 let body = JSON.parse($response.body);
 
 if (url.indexOf(path1) != -1 || url.indexOf(path6) != -1) {
-  body.data.forEach((element, index) => {
-    if (element.hasOwnProperty('adjson')) {
-      body.data.splice(index, 1);
+  body.data = body.data.filter(function(item) {
+    if (item.hasOwnProperty('adjson')) {
+      return false;
     }
-  })
+    return true;
+  });
 }
 
 if (url.indexOf(path2) != -1) {
-  body.data.forEach((element, index) => {
-    if (element.card_type == "slot_event_card" || element.hasOwnProperty('ad')) {
-      body.data.splice(index, 1);
+  body.data = body.data.filter(function(item) {
+    if (item.card_type == "slot_event_card" || item.hasOwnProperty('ad')) {
+      return false;
     }
-  })
+    return true;
+  });
 }
 
 if (url.indexOf(path3) != -1) {
   delete body.ad_info;
   /*
-  body.data.forEach((element, index) => {
-    if (element.author.name == "盐选推荐") {
-      body.data.splice(index, 1);
+  body.data = body.data.filter(function(item) {
+    if (item.author.name == "盐选推荐") {
+      return false;
     }
-  })
+    return true;
+  });
   */
 }
 
