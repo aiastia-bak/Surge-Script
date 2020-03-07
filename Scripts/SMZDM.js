@@ -11,7 +11,7 @@ if (body.data.hasOwnProperty('notice')) {
   delete body.data.notice;
 }
 body.data.rows = body.data.rows.filter(function(item) {
-  if (element.article_channel_id == -1) {
+  if (item.article_channel_id == -1 || item.model_type == "ads") {
     return false;
   }
   return true;
