@@ -1,5 +1,4 @@
-const $tool = new Tool()
-const $base64 = new Base64()
+const $base64 = new base64()
 const consoleLog = false
 const path1 = "/amdc/mobileDispatch"
 const path2 = "/gw/mtop.taobao.detail.getdetail"
@@ -8,7 +7,7 @@ let url = $request.url
 let body = $response.body
 
 if (url.indexOf(path1) != -1) {
-  if ($tool.isResponse) {
+  if ($response) {
     body = JSON.parse($base64.decode(body))
     let dns = body.dns
     if (dns && dns.length > 0) {
@@ -70,7 +69,6 @@ if (url.indexOf(path2) != -1) {
           $done({
             body
           })
-          sendNotify(data, shareUrl)
         } else {
           if (tradeConsumerProtection) {
             tradeConsumerProtection = setTradeConsumerProtection(data, tradeConsumerProtection)
@@ -92,7 +90,6 @@ if (url.indexOf(path2) != -1) {
         $done({
           body
         })
-        sendNotify(data, shareUrl)
       }
     } else {
       $done({
@@ -100,18 +97,6 @@ if (url.indexOf(path2) != -1) {
       })
     }
   })
-}
-
-function sendNotify(data, shareUrl) {
-  if (data.ok == 1 && data.single) {
-    const lower = lowerMsgs(data.single)[0]
-    const detail = priceSummary(data)[1]
-    const tip = data.PriceRemark.Tip + "（仅供参考）"
-    $tool.notify("", "", `〽️历史${lower} ${tip}\n${detail}\n\n👉查看详情：http://tool.manmanbuy.com/historyLowest.aspx?url=${encodeURI(shareUrl)}`)
-  }
-  if (data.ok == 0 && data.msg.length > 0) {
-    $tool.notify("", "", `⚠️ ${data.msg}`)
-  }
 }
 
 function setConsumerProtection(data, consumerProtection) {
@@ -249,11 +234,21 @@ function difference(currentPrice, price) {
   }
 }
 
-function sub(num1, num2) {
-  const num1Digits = (num1.toString().split('.')[1] || '').length;
-  const num2Digits = (num2.toString().split('.')[1] || '').length;
-  const baseNum = Math.pow(10, Math.max(num1Digits, num2Digits));
-  return (num1 * baseNum - num2 * baseNum) / baseNum;
+function sub(arg1, arg2) {
+  return add(arg1, -Number(arg2), arguments[2]);
+}
+
+function add(arg1, arg2) {
+  arg1 = arg1.toString(), arg2 = arg2.toString();
+  let arg1Arr = arg1.split("."),
+    arg2Arr = arg2.split("."),
+    d1 = arg1Arr.length == 2 ? arg1Arr[1] : "",
+    d2 = arg2Arr.length == 2 ? arg2Arr[1] : "";
+  let maxLen = Math.max(d1.length, d2.length);
+  let m = Math.pow(10, maxLen);
+  let result = Number(((arg1 * m + arg2 * m) / m).toFixed(maxLen));
+  let d = arguments[2];
+  return typeof d === "number" ? Number((result).toFixed(d)) : result;
 }
 
 function requestPrice(share_url, callback) {
@@ -265,7 +260,7 @@ function requestPrice(share_url, callback) {
     },
     body: "methodName=getHistoryTrend&p_url=" + encodeURIComponent(share_url)
   }
-  $tool.post(options, function(error, response, data) {
+  $httpClient.post(options, function(error, response, data) {
     if (!error) {
       callback(JSON.parse(data));
       if (consoleLog) console.log("Data:\n" + data);
@@ -373,86 +368,7 @@ Date.prototype.format = function(fmt) {
   return fmt;
 }
 
-function Tool() {
-  _node = (() => {
-    if (typeof require == "function") {
-      const request = require('request')
-      return ({
-        request
-      })
-    } else {
-      return (null)
-    }
-  })()
-  _isSurge = typeof $httpClient != "undefined"
-  _isQuanX = typeof $task != "undefined"
-  this.isSurge = _isSurge
-  this.isQuanX = _isQuanX
-  this.isResponse = typeof $response != "undefined"
-  this.notify = (title, subtitle, message) => {
-    if (_isQuanX) $notify(title, subtitle, message)
-    if (_isSurge) $notification.post(title, subtitle, message)
-    if (_node) console.log(JSON.stringify({
-      title,
-      subtitle,
-      message
-    }));
-  }
-  this.write = (value, key) => {
-    if (_isQuanX) return $prefs.setValueForKey(value, key)
-    if (_isSurge) return $persistentStore.write(value, key)
-  }
-  this.read = (key) => {
-    if (_isQuanX) return $prefs.valueForKey(key)
-    if (_isSurge) return $persistentStore.read(key)
-  }
-  this.get = (options, callback) => {
-    if (_isQuanX) {
-      if (typeof options == "string") options = {
-        url: options
-      }
-      options["method"] = "GET"
-      $task.fetch(options).then(response => {
-        callback(null, _status(response), response.body)
-      }, reason => callback(reason.error, null, null))
-    }
-    if (_isSurge) $httpClient.get(options, (error, response, body) => {
-      callback(error, _status(response), body)
-    })
-    if (_node) _node.request(options, (error, response, body) => {
-      callback(error, _status(response), body)
-    })
-  }
-  this.post = (options, callback) => {
-    if (_isQuanX) {
-      if (typeof options == "string") options = {
-        url: options
-      }
-      options["method"] = "POST"
-      $task.fetch(options).then(response => {
-        callback(null, _status(response), response.body)
-      }, reason => callback(reason.error, null, null))
-    }
-    if (_isSurge) $httpClient.post(options, (error, response, body) => {
-      callback(error, _status(response), body)
-    })
-    if (_node) _node.request.post(options, (error, response, body) => {
-      callback(error, _status(response), body)
-    })
-  }
-  _status = (response) => {
-    if (response) {
-      if (response.status) {
-        response["statusCode"] = response.status
-      } else if (response.statusCode) {
-        response["status"] = response.statusCode
-      }
-    }
-    return response
-  }
-}
-
-function Base64() {
+function base64() {
   // private property
   _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
   // public method for encoding
