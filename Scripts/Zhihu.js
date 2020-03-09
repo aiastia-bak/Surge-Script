@@ -4,7 +4,7 @@ const path3 = "/questions/";
 const path4 = "/market/header";
 const path5 = "/people";
 const path6 = "/moments/recommend?";
-const path7 = "/appview/v2/answer/"
+const path7 = "/appview"
 
 let url = $request.url;
 let body = $response.body;
