@@ -1,3 +1,6 @@
+##更新后知乎去广告脚本有可能仅支持Surge，请悉知。
+
+
 部分自用Scripts。
 
 部分自写部分整合。
@@ -16,7 +19,7 @@ http-response ^https?:\/\/ap(i|p).(live.)?bilibili.com\/x(live)?\/(resource\/sho
 ```
 知乎去广告整合（N脚本合一）
 ```
-http-response ^https?:\/\/api\.zhihu\.com\/(moments\?(action|feed_type)|topstory\/recommend|.*\/questions|market\/header|people) requires-body=1,max-size=-1,script-path=https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/Zhihu.js
+http-response ^https?:\/\/(api|www)\.zhihu\.com\/(moments(\/recommend)?\?(action|feed_type)|topstory\/recommend|.*\/questions|market\/header|people|appview\/v2\/answer\/\d{1,10}\?no\_image\=false\&X\-SUGER\=) requires-body=1,max-size=-1,script-path=https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/Zhihu.js
 ```
 丁香园用药助手解锁订阅（非医务工作者无需此App）
 ```
