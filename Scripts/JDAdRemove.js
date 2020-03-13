@@ -12,7 +12,7 @@ if (url.indexOf(path1) != -1) {
 
 if (url.indexOf(path2) != -1 || url.indexOf(path3) != -1) {
   body.floors = body.floors.filter(function(item) {
-    if (item.mId == "bannerFloor" || item.mId == "orderTrackPush" || item.mId == "jdDeliveryBanner" || item.mId == "commonBanner") {
+    if (item.mId == "bannerFloor" || item.mId == "orderTrackPush" || item.mId == "jdDeliveryBanner" || item.mId == "commonBanner" || item.mId == "orderQuestionAnswer") {
       return false;
     }
     return true;
