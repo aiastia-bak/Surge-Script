@@ -9,6 +9,10 @@ hosts部分自行添加。
 ```
 RUL-SET,https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Rule-Sets/ADs-Block.rulesets,reject
 ```
+京东去广告、Banner
+```
+http-response ^https?://api\.m\.jd\.com/client\.action\?functionId=(start|myOrderInfo|orderTrackBusiness) requires-body=1,max-size=-1,script-path=https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/JDAdRemove.js
+```
 什么值得买去广告
 ```
 http-response ^https?:\/\/(h(aojia|omepage)|(articl|baik)e|s)-api\.smzdm\.com\/(home|sou) requires-body=1,max-size=-1,script-path=https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/SMZDM.js
