@@ -15,7 +15,7 @@ https://github.com/limbopro/Profiles/tree/master/limbopro/Gift/Without/unzip
 
 
 ## 温馨提醒
-[使用 iMazing 备份 IPA](https://limbopro.xyz/archives/imazing.html) 备份一下App，给自己一剂后悔药（QuantumultX/VSCO/Terimius/Tiktok..）。  
+[使用 iMazing 备份 IPA](https://limbopro.xyz/archives/imazing.html)（备份一下App，给自己一剂后悔药💊 QuantumultX/VSCO/Terimius/Tiktok..某些版本具有某些特别的特性）。  
 
 ## 主理人有话说
 1. 就最近的使用体验来做一个总结，引用本地脚本或多是优于引用远程脚本的；
