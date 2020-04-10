@@ -15,17 +15,15 @@ https://github.com/limbopro/Profiles/tree/master/limbopro/Gift/Without/unzip
 
 
 ## 温馨提醒
-[仅需三步，免费使用iMazing 轻松下载IPA （当前最新版本）/ 或安装IPA文件（旧版本）（以及解锁完整版本以备份你的整个iPhone）](https://limbopro.xyz/archives/imazing.html) 备份一下App，给自己一剂后悔药（QuantumultX/VSCO/Terimius/Tiktok..）。  
+[使用 iMazing 备份 IPA](https://limbopro.xyz/archives/imazing.html) 备份一下App，给自己一剂后悔药（QuantumultX/VSCO/Terimius/Tiktok..）。  
 
 ## 主理人有话说
-1.就最近的使用体验来做一个总结，引用本地脚本或多是优于引用远程脚本的；
-
-2.如果你发现某个`脚本`(解锁)不好用，时灵时不灵，那就用用本地脚本吧（例如抖音去水印，明显感觉到本地脚本的优势百分百去水印）；
-
-3.以上，都是屁话；
+1. 就最近的使用体验来做一个总结，引用本地脚本或多是优于引用远程脚本的；
+2. 如果你发现某个`脚本`(解锁)不好用，时灵时不灵，那就用用本地脚本吧（例如抖音去水印，明显感觉到本地脚本的优势百分百去水印）；
+3. 以上，都是屁话；
 
 ## 26.11.2019 更新
-本地，远程脚本均可用；
+本地，远程脚本均可用，仅针对 Quantumult X 1.0.3 版本；
 
 [仓库](https://github.com/limbopro/Script)新增加 `unblockremote.js`，以简化 QuantumultX 1.0.3 配置`设备ID`流程，最终使得  [rewrite_remote] `远程`引用`脚本配置文件`可用：(`https://raw.githubusercontent.com/NobyDa/Script/master/QuantumultX/Js.conf`)；
 
