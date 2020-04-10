@@ -13,4 +13,8 @@ Surge & QX Mitm = splice.oracle.*.com
 var obj = JSON.parse($response.body); 
 obj['will_renew_subscription'] = true; 
 obj['is_subscribed'] = true; 
+<<<<<<< HEAD
 $done({body: JSON.stringify(obj)});
+=======
+$done({body: JSON.stringify(obj)});
+>>>>>>> upstream/master

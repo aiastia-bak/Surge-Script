@@ -1,4 +1,4 @@
-# Update-2019.10.23 Self-use rule, Remove versus shenji duplicates and optimizations
+# Update-2020.4.9 Self-use rule, Remove versus shenji duplicates and optimizations
 # This rule does not include shenji
 DOMAIN-SUFFIX,apoll.m.taobao.com,REJECT
 DOMAIN-SUFFIX,comet.yahoo.com,REJECT
@@ -17,7 +17,6 @@ DOMAIN-SUFFIX,cupid.iqiyi.com,REJECT
 DOMAIN-SUFFIX,emoticon.sns.iqiyi.com,REJECT
 DOMAIN-SUFFIX,game.pps.tv,REJECT
 DOMAIN-SUFFIX,gamecenter.iqiyi.com,REJECT
-DOMAIN-SUFFIX,hotchat-im.iqiyi.com,REJECT
 DOMAIN-SUFFIX,mbdlog.iqiyi.com,REJECT
 DOMAIN-SUFFIX,msg.iqiyi.com,REJECT
 DOMAIN-SUFFIX,msg.video.qiyi.com,REJECT
@@ -3796,7 +3795,6 @@ DOMAIN-SUFFIX,i.bigmir.net,REJECT
 DOMAIN-SUFFIX,i.clkservice.youdao.com,REJECT
 DOMAIN-SUFFIX,i.dreamfull.cn,REJECT
 DOMAIN-SUFFIX,i.flow.browser.oppomobile.com,REJECT
-DOMAIN-SUFFIX,i.gdt.qq.com,REJECT
 DOMAIN-SUFFIX,i.go.sohu.com,REJECT
 DOMAIN-SUFFIX,i.haloapps.com,REJECT
 DOMAIN-SUFFIX,i.hao61.net,REJECT
@@ -4566,7 +4564,6 @@ DOMAIN-SUFFIX,liangao.com,REJECT
 DOMAIN-SUFFIX,liangziweixg.com,REJECT
 DOMAIN-SUFFIX,lib.haotv8.com,REJECT
 DOMAIN-SUFFIX,liba.haotv8.com,REJECT
-DOMAIN-SUFFIX,libs.baidu.com,REJECT
 DOMAIN-SUFFIX,libs.tvmao.cn,REJECT
 DOMAIN-SUFFIX,license.lumion3d.com,REJECT
 DOMAIN-SUFFIX,license.lumion3d.net,REJECT
@@ -5091,7 +5088,6 @@ DOMAIN-SUFFIX,maw.wnbfw.com,REJECT
 DOMAIN-SUFFIX,maxwebsearch.com,REJECT
 DOMAIN-SUFFIX,maysunmedia.com,REJECT
 DOMAIN-SUFFIX,mb.hockeybuzz.com,REJECT
-DOMAIN-SUFFIX,mb.yidianzixun.com,REJECT
 DOMAIN-SUFFIX,mb.zam.com,REJECT
 DOMAIN-SUFFIX,mbai.cn,REJECT
 DOMAIN-SUFFIX,mbd.weathercn.com,REJECT
@@ -7978,4 +7974,8 @@ DOMAIN-SUFFIX,zzy1.quyaoya.com,REJECT
 DOMAIN-SUFFIX,zzz7.52896368.com,REJECT
 DOMAIN-SUFFIX,zzzzz4.52896368.com,REJECT
 DOMAIN-SUFFIX,analytics.query.yahoo.com,REJECT
-DOMAIN-SUFFIX,is.snssdk.com,REJECT
+DOMAIN-SUFFIX,ap.dongqiudi.com,REJECT
+DOMAIN,adx.open-adx.com,REJECT
+DOMAIN,adservice.sigmob.cn,REJECT
+DOMAIN,unidesk.alicdn.com,REJECT
+DOMAIN,mcupdate.gstarcad.com,REJECT
