@@ -1,3 +1,19 @@
+# 更新 04.08.2020
+
+如大家需要使用 JS ，建议大家转移使用 Unzip 版本（简单轻松快乐版）https://github.com/limbopro/Profiles/blob/master/limbopro/Gift/Without/unzip/README.MD
+
+## Quantumultx 预配置文件解锁🔓各项姿势（VSCO/Tiktok/Terimius...）
+
+https://github.com/limbopro/Profiles/tree/master/limbopro/Gift/Without/unzip
+
+### 毒奶预配置文件（unzip版）说明
+
+1. 利用 Quantumult X 自带的 [配置文件] - [下载] 功能对 Quantumult X 各个模块即参数进行预配置；
+2. 利用 NobyDa 贡献的脚本解锁🔓各项事务，VSCO，Termius，等；
+3. 另外默认配置的是 🔓 美区App Store下载的 Tiktok；届时自己进 [QuantumultX] - [配置文件] - [编辑] - 找到 Tiktok 修改参数即可
+4. Surge/Clash 用户可以使用由毒奶提供的 订阅转换 API，亦能获得相同的效果；https://limbopro.xyz/archives/subconverter.html
+
+
 ## 温馨提醒
 [仅需三步，免费使用iMazing 轻松下载IPA （当前最新版本）/ 或安装IPA文件（旧版本）（以及解锁完整版本以备份你的整个iPhone）](https://limbopro.xyz/archives/imazing.html) 备份一下App，给自己一剂后悔药（QuantumultX/VSCO/Terimius/Tiktok..）。  
 
