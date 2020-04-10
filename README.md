@@ -13,6 +13,11 @@ https://github.com/limbopro/Profiles/tree/master/limbopro/Gift/Without/unzip
 3. 另外默认配置的是 🔓 美区App Store下载的 Tiktok；届时自己进 [QuantumultX] - [配置文件] - [编辑] - 找到 Tiktok 修改参数即可
 4. Surge/Clash 用户可以使用由毒奶提供的 订阅转换 API，亦能获得相同的效果；https://limbopro.xyz/archives/subconverter.html
 
+以上。
+
+---
+
+以下为本 Readme.md 正文。
 
 ## 温馨提醒
 [使用 iMazing 备份 IPA](https://limbopro.xyz/archives/imazing.html)（备份一下App，给自己一剂后悔药💊 QuantumultX/VSCO/Terimius/Tiktok..某些版本具有某些特别的特性）。  
