@@ -4,7 +4,8 @@ const path3 = "/questions/";
 const path4 = "/market/header";
 const path5 = "/people";
 const path6 = "/moments/recommend?";
-const path7 = "/appview"
+const path7 = "/appview/"
+const path8 = "/api/videos/"
 
 let url = $request.url;
 let body = $response.body;
@@ -52,6 +53,10 @@ if ($request.method == "GET") {
 
     if (url.indexOf(path5) != -1) {
       delete body.mcn_user_info;
+    }
+
+    if (url.indexOf(path8) != -1) {
+      delete body.ad_info;
     }
 
     body = JSON.stringify(body);
