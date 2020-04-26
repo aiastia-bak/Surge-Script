@@ -12,4 +12,4 @@ URL-REGEX,^https?:\/\/www\.dxy\.cn\/webservices\/app\/specialAd\/list\?ac=,REJEC
 hostname = %INSERT% *.dxy.cn
 
 [Script]
-DingxiangDrugs.js = requires-body=1,script-path=https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/DingxiangDrugs.js,pattern=^https?:\/\/newdrugs\.dxy\.cn\/app\/user\/(p(ay\/checkIntroOfferPeriod|ro\/stat)|init)\?,type=http-response
+DingxiangDrugs.js = requires-body=1,script-path=https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/DingXiangDrugs.js,pattern=^https?:\/\/newdrugs\.dxy\.cn\/app\/user\/(p(ay\/checkIntroOfferPeriod|ro\/stat)|init)\?,type=http-response
