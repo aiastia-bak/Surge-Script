@@ -1,102 +1,70 @@
-const $base64 = new base64()
-const consoleLog = false
-const path1 = "/amdc/mobileDispatch"
-const path2 = "/gw/mtop.taobao.detail.getdetail"
-
-let url = $request.url
-let body = $response.body
-
-if (url.indexOf(path1) != -1) {
-  if ($response) {
-    body = JSON.parse($base64.decode(body))
-    let dns = body.dns
-    if (dns && dns.length > 0) {
-      let i = dns.length;
-      while (i--) {
-        const element = dns[i];
-        let host = "trade-acs.m.taobao.com"
-        if (element.host == host) {
-          element.ips = []
-          if (consoleLog) console.log(JSON.stringify(element))
-        }
+let body = JSON.parse($response.body)
+let item = body.data.item
+let shareUrl = `https://item.taobao.com/item.htm?id=${item.itemId}`
+requestPrice(shareUrl, function(data) {
+  if (data) {
+    if (body.data.apiStack) {
+      let apiStack = body.data.apiStack[0]
+      let value = JSON.parse(apiStack.value)
+      let tradeConsumerProtection = null
+      let consumerProtection = null
+      let trade = null
+      let vertical = null
+      if (value.global) {
+        tradeConsumerProtection = value.global.data.tradeConsumerProtection
+        consumerProtection = value.global.data.consumerProtection
+        trade = value.global.data.trade
+        vertical = value.global.data.vertical
+      } else {
+        tradeConsumerProtection = value.tradeConsumerProtection
+        consumerProtection = value.consumerProtection
+        trade = value.trade
+        vertical = value.vertical
       }
-    }
-    body = $base64.encode(JSON.stringify(body))
-    $done({
-      body
-    })
-  } else {
-    let json = Qs2Json(body)
-    let domain = json.domain.split(" ")
-    let i = domain.length;
-    while (i--) {
-      const block = "trade-acs.m.taobao.com"
-      const element = domain[i];
-      if (element == block) {
-        domain.splice(i, 1);
-      }
-    }
-    json.domain = domain.join(" ")
-    body = Json2Qs(json)
-    $done({
-      body
-    })
-  }
-}
-
-if (url.indexOf(path2) != -1) {
-  body = JSON.parse(body)
-  let item = body.data.item
-  let shareUrl = `https://item.taobao.com/item.htm?id=${item.itemId}`
-  requestPrice(shareUrl, function(data) {
-    if (data) {
-      if (body.data.apiStack) {
-        let apiStack = body.data.apiStack[0]
-        let value = JSON.parse(apiStack.value)
-        let tradeConsumerProtection = null
-        let consumerProtection = null
-        let trade = null
-        if (value.global) {
-          tradeConsumerProtection = value.global.data.tradeConsumerProtection
-          consumerProtection = value.global.data.consumerProtection
-          trade = value.global.data.trade
-        } else {
-          tradeConsumerProtection = value.tradeConsumerProtection
-          consumerProtection = value.consumerProtection
-          trade = value.trade
-        }
-        if (trade && trade.useWap == "true") {
+      if (trade && trade.useWap == "true") {
+        $done({
+          body
+        })
+        sendNotify(data, shareUrl)
+      } else {
+        if (vertical && vertical.hasOwnProperty("tmallhkDirectSale")) {
           $done({
             body
           })
+          sendNotify(data, shareUrl)
+        } else if (tradeConsumerProtection) {
+          tradeConsumerProtection = setTradeConsumerProtection(data, tradeConsumerProtection)
         } else {
-          if (tradeConsumerProtection) {
-            tradeConsumerProtection = setTradeConsumerProtection(data, tradeConsumerProtection)
-          } else {
-            let vertical = value.vertical
-            if (vertical && vertical.hasOwnProperty("tmallhkDirectSale")) {
-              value["tradeConsumerProtection"] = customTradeConsumerProtection()
-              value.tradeConsumerProtection = setTradeConsumerProtection(data, value.tradeConsumerProtection)
-            } else {
-              consumerProtection = setConsumerProtection(data, consumerProtection)
-            }
-          }
-          apiStack.value = JSON.stringify(value)
-          $done({
-            body: JSON.stringify(body)
-          })
+          consumerProtection = setConsumerProtection(data, consumerProtection)
         }
-      } else {
+        apiStack.value = JSON.stringify(value)
         $done({
-          body
+          body: JSON.stringify(body)
         })
       }
     } else {
       $done({
         body
       })
+      sendNotify(data, shareUrl)
     }
-  })
+  } else {
+    $done({
+      body
+    })
+  }
+})
+
+function sendNotify(data, shareUrl) {
+  if (data.ok == 1 && data.single) {
+    const lower = lowerMsgs(data.single)[0]
+    const detail = priceSummary(data)[1]
+    const tip = data.PriceRemark.Tip + "（仅供参考）"
+    $notification.post("", "", `〽️历史${lower} ${tip}\n${detail}\n\n👉查看详情：http://tool.manmanbuy.com/historyLowest.aspx?url=${encodeURI(shareUrl)}`)
+  }
+  if (data.ok == 0 && data.msg.length > 0) {
+    $notification.post("", "", `⚠️ ${data.msg}`)
+  }
 }
 
 function setConsumerProtection(data, consumerProtection) {
@@ -152,11 +120,11 @@ function priceSummary(data) {
   listPriceDetail.pop()
   let list = listPriceDetail.concat(historySummary(data.single))
   list.forEach((item, index) => {
-    if (index == 2) {
+    if (item.Name == "双11价格") {
       item.Name = "双十一价格"
-    } else if (index == 3) {
+    } else if (item.Name == "618价格") {
       item.Name = "六一八价格"
-    } else if (index == 4) {
+    } else if (item.Name == "30天最低价") {
       item.Name = "三十天最低"
     }
     summary += `\n${item.Name}${getSpace(4)}${item.Price}${getSpace(4)}${item.Date}${getSpace(4)}${item.Difference}`
@@ -263,10 +231,8 @@ function requestPrice(share_url, callback) {
   $httpClient.post(options, function(error, response, data) {
     if (!error) {
       callback(JSON.parse(data));
-      if (consoleLog) console.log("Data:\n" + data);
     } else {
       callback(null, null);
-      if (consoleLog) console.log("Error:\n" + error);
     }
   })
 }
@@ -314,29 +280,6 @@ function customTradeConsumerProtection() {
   }
 }
 
-function Qs2Json(url) {
-  url = url == null ? window.location.href : url;
-  let search = url.substring(url.lastIndexOf("?") + 1);
-  let body = {};
-  let reg = /([^?&=]+)=([^?&=]*)/g;
-  search.replace(reg, function(rs, $1, $2) {
-    let name = decodeURIComponent($1);
-    let val = decodeURIComponent($2);
-    val = String(val);
-    body[name] = val;
-    return rs;
-  });
-  return body;
-}
-
-function Json2Qs(json) {
-  let temp = [];
-  for (let k in json) {
-    temp.push(k + "=" + json[k]);
-  }
-  return temp.join("&");
-}
-
 Array.prototype.insert = function(index, item) {
   this.splice(index, 0, item);
 };
@@ -366,103 +309,4 @@ Date.prototype.format = function(fmt) {
     }
   }
   return fmt;
-}
-
-function base64() {
-  // private property
-  _keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-  // public method for encoding
-  this.encode = function(input) {
-    let output = "";
-    let chr1, chr2, chr3, enc1, enc2, enc3, enc4;
-    let i = 0;
-    input = _utf8_encode(input);
-    while (i < input.length) {
-      chr1 = input.charCodeAt(i++);
-      chr2 = input.charCodeAt(i++);
-      chr3 = input.charCodeAt(i++);
-      enc1 = chr1 >> 2;
-      enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
-      enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
-      enc4 = chr3 & 63;
-      if (isNaN(chr2)) {
-        enc3 = enc4 = 64;
-      } else if (isNaN(chr3)) {
-        enc4 = 64;
-      }
-      output = output +
-        _keyStr.charAt(enc1) + _keyStr.charAt(enc2) +
-        _keyStr.charAt(enc3) + _keyStr.charAt(enc4);
-    }
-    return output;
-  }
-  // public method for decoding
-  this.decode = function(input) {
-    let output = "";
-    let chr1, chr2, chr3;
-    let enc1, enc2, enc3, enc4;
-    let i = 0;
-    input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-    while (i < input.length) {
-      enc1 = _keyStr.indexOf(input.charAt(i++));
-      enc2 = _keyStr.indexOf(input.charAt(i++));
-      enc3 = _keyStr.indexOf(input.charAt(i++));
-      enc4 = _keyStr.indexOf(input.charAt(i++));
-      chr1 = (enc1 << 2) | (enc2 >> 4);
-      chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-      chr3 = ((enc3 & 3) << 6) | enc4;
-      output = output + String.fromCharCode(chr1);
-      if (enc3 != 64) {
-        output = output + String.fromCharCode(chr2);
-      }
-      if (enc4 != 64) {
-        output = output + String.fromCharCode(chr3);
-      }
-    }
-    output = _utf8_decode(output);
-    return output;
-  }
-  // private method for UTF-8 encoding
-  _utf8_encode = function(string) {
-    string = string.replace(/\r\n/g, "\n");
-    let utftext = "";
-    for (let n = 0; n < string.length; n++) {
-      let c = string.charCodeAt(n);
-      if (c < 128) {
-        utftext += String.fromCharCode(c);
-      } else if ((c > 127) && (c < 2048)) {
-        utftext += String.fromCharCode((c >> 6) | 192);
-        utftext += String.fromCharCode((c & 63) | 128);
-      } else {
-        utftext += String.fromCharCode((c >> 12) | 224);
-        utftext += String.fromCharCode(((c >> 6) & 63) | 128);
-        utftext += String.fromCharCode((c & 63) | 128);
-      }
-
-    }
-    return utftext;
-  }
-  // private method for UTF-8 decoding
-  _utf8_decode = function(utftext) {
-    let string = "";
-    let i = 0;
-    let c = c1 = c2 = 0;
-    while (i < utftext.length) {
-      c = utftext.charCodeAt(i);
-      if (c < 128) {
-        string += String.fromCharCode(c);
-        i++;
-      } else if ((c > 191) && (c < 224)) {
-        c2 = utftext.charCodeAt(i + 1);
-        string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
-        i += 2;
-      } else {
-        c2 = utftext.charCodeAt(i + 1);
-        c3 = utftext.charCodeAt(i + 2);
-        string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
-        i += 3;
-      }
-    }
-    return string;
-  }
 }
