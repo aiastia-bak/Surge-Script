@@ -1,5 +1,5 @@
 #!name=丁香园系列去广告
-#!desc=丁香园系列App去广告&用药助手不可描述使用
+#!desc=丁香园系列App去广告
 #!system=ios
 
 [Rule]
@@ -10,6 +10,3 @@ URL-REGEX,^https?:\/\/www\.dxy\.cn\/webservices\/app\/specialAd\/list\?ac=,REJEC
 
 [MITM]
 hostname = %INSERT% *.dxy.cn
-
-[Script]
-DingxiangDrugs.js = requires-body=1,script-path=https://raw.githubusercontent.com/primovist/ScriptsForSurge/master/Scripts/DingXiangDrugs.js,pattern=^https?:\/\/newdrugs\.dxy\.cn\/app\/user\/(p(ay\/checkIntroOfferPeriod|ro\/stat)|init)\?,type=http-response
