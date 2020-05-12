@@ -5,7 +5,7 @@ const path4 = "/x/v2/view?access_key";
 const path5 = "/x/v2/view/material?access_key";
 const path6 = "/x/v2/reply/main?access_key";
 const path7 = "/x/v2/rank?access_key";
-const path8 = "/x/v2/show/popular/index";
+const path8 = "/x/v2/channel/region/list?access_key";
 const path9 = "/xlive/app-room/v1/index/getInfoByRoom?access_key";
 const path10 = "/x/v2/account/teenagers/status?access_key";
 const path11 = "/x/v2/account/mine/ipad?access_key";
@@ -96,15 +96,10 @@ if (url.indexOf(path1) != -1) {
       "pos": 4
     }
   ]
-}
-
-if (url.indexOf(path2) != -1) {
+} else if (url.indexOf(path2) != -1) {
   let blacklist = [];
   body.data.items = body.data.items.filter(function(item) {
-    if (['ad_web_s', 'ad_web', 'live', 'banner', 'search_subscribe'].includes(item.card_goto)) {
-      return false;
-    }
-    if (item.hasOwnProperty('ad_info')) {
+    if (item.card_goto == "banner" || item.card_goto == "ad_web_s") {
       return false;
     }
     if (blacklist.includes(item.args.up_name)) {
@@ -120,54 +115,141 @@ if (url.indexOf(path2) != -1) {
     }
     return true;
   });
-}
-
-if (url.indexOf(path3) != -1) {
-  body.data.sections = [{
-    "title": "个人中心",
-    "items": [{
-        "title": "历史记录",
-        "icon": "http://i0.hdslb.com/bfs/archive/ae502b4b69b6a3b287ea59b1552859332e59c277.png",
-        "uri": "bilibili://user_center/history"
-      },
-      {
-        "title": "我的收藏",
-        "icon": "http://i0.hdslb.com/bfs/archive/1e6b0583257a086f40779c10ad7e2fcd72984463.png",
-        "uri": "bilibili://user_center/favourite"
-      },
-      {
-        "title": "稍后再看",
-        "icon": "http://i0.hdslb.com/bfs/archive/56893a05f41d7c503f7f1f5b67e9ee2add8581fa.png",
-        "uri": "bilibili://user_center/watch_later"
-      },
-      {
-        "title": "创作首页",
-        "icon": "http://i0.hdslb.com/bfs/archive/d3aad2d07538d2d43805f1fa14a412d7a45cc861.png",
-        "uri": "bilibili://uper/homevc"
-      },
-      {
-        "title": "投稿",
-        "icon": "http://i0.hdslb.com/bfs/archive/86a8fdc40f4a5842d9b6454dead1f049db64ffc5.png",
-        "uri": "/uper/user_center/add_archive"
+} else if (url.indexOf(path3) != -1) {
+  body.data.sections_v2 = [{
+      "items": [{
+          "id": 396,
+          "title": "离线缓存",
+          "icon": "http://i0.hdslb.com/bfs/archive/5fc84565ab73e716d20cd2f65e0e1de9495d56f8.png",
+          "uri": "bilibili://user_center/download"
+        },
+        {
+          "id": 397,
+          "title": "历史记录",
+          "icon": "http://i0.hdslb.com/bfs/archive/8385323c6acde52e9cd52514ae13c8b9481c1a16.png",
+          "uri": "bilibili://user_center/history"
+        },
+        {
+          "id": 398,
+          "title": "我的收藏",
+          "icon": "http://i0.hdslb.com/bfs/archive/d79b19d983067a1b91614e830a7100c05204a821.png",
+          "uri": "bilibili://user_center/favourite"
+        },
+        {
+          "id": 399,
+          "title": "稍后再看",
+          "icon": "http://i0.hdslb.com/bfs/archive/63bb768caa02a68cb566a838f6f2415f0d1d02d6.png",
+          "need_login": 1,
+          "uri": "bilibili://user_center/watch_later"
+        }
+      ],
+      "style": 1,
+      "button": {}
+    },
+    {
+      "title": "创作中心",
+      "items": [{
+          "need_login": 1,
+          "display": 1,
+          "id": 171,
+          "title": "创作首页",
+          "uri": "bilibili://uper/homevc",
+          "icon": "http://i0.hdslb.com/bfs/archive/d3aad2d07538d2d43805f1fa14a412d7a45cc861.png"
+        },
+        {
+          "need_login": 1,
+          "display": 1,
+          "id": 172,
+          "title": "稿件管理",
+          "uri": "bilibili://uper/user_center/archive_list",
+          "icon": "http://i0.hdslb.com/bfs/archive/97acb2d8dec09b296a38f7f7093d651947d13b91.png"
+        },
+        {
+          "need_login": 1,
+          "display": 1,
+          "id": 298,
+          "title": "创作日历",
+          "uri": "https://member.bilibili.com/studio/gabriel/creator-calendar/today?navhide=1",
+          "icon": "http://i0.hdslb.com/bfs/archive/ccb3a0f38ed0ea72a773741c5d82b11ceb8ce3f0.png"
+        },
+        {
+          "need_login": 1,
+          "display": 1,
+          "id": 174,
+          "title": "热门活动",
+          "uri": "https://www.bilibili.com/blackboard/x/activity-tougao-h5/all",
+          "icon": "http://i0.hdslb.com/bfs/archive/7f4fa86d99bf3814bf10f8ee5d6c8c9db6e931c8.png"
+        }
+      ],
+      "style": 1,
+      "button": {
+        "icon": "http://i0.hdslb.com/bfs/archive/205f47675eaaca7912111e0e9b1ac94cb985901f.png",
+        "style": 1,
+        "url": "bilibili://uper/user_center/archive_selection",
+        "text": "发布"
       }
-    ]
-  }]
-}
-
-if (url.indexOf(path4) != -1) {
+    },
+    {
+      "title": "推荐服务",
+      "items": [{
+          "id": 400,
+          "title": "我的课程",
+          "icon": "http://i0.hdslb.com/bfs/archive/aa3a13c287e4d54a62b75917dd9970a3cde472e1.png",
+          "uri": "https://m.bilibili.com/cheese/mine?navhide=1"
+        },
+        {
+          "id": 402,
+          "title": "个性装扮",
+          "icon": "http://i0.hdslb.com/bfs/archive/0bcad10661b50f583969b5a188c12e5f0731628c.png",
+          "uri": "https://www.bilibili.com/h5/mall/home?navhide=1&from=myservice"
+        },
+        {
+          "id": 406,
+          "title": "直播中心",
+          "icon": "http://i0.hdslb.com/bfs/archive/1db5791746a0112890b77a0236baf263d71ecb27.png",
+          "uri": "bilibili://user_center/live_center"
+        },
+        {
+          "id": 421,
+          "title": "创作学院",
+          "icon": "http://i0.hdslb.com/bfs/archive/12327dba191bc36e9e65a815aa56aa9bb9225c7e.png",
+          "need_login": 1,
+          "uri": "https://member.bilibili.com/college?navhide=1&from=my"
+        }
+      ],
+      "style": 1,
+      "button": {}
+    },
+    {
+      "title": "更多服务",
+      "items": [{
+          "id": 407,
+          "title": "联系客服",
+          "icon": "http://i0.hdslb.com/bfs/archive/7ca840cf1d887a45ee1ef441ab57845bf26ef5fa.png",
+          "uri": "bilibili://user_center/feedback"
+        },
+        {
+          "id": 410,
+          "title": "设置",
+          "icon": "http://i0.hdslb.com/bfs/archive/e932404f2ee62e075a772920019e9fbdb4b5656a.png",
+          "uri": "bilibili://user_center/setting"
+        }
+      ],
+      "style": 2,
+      "button": {}
+    }
+  ]
+} else if (url.indexOf(path4) != -1) {
   if (body.data.hasOwnProperty('relates')) {
     body.data.relates = body.data.relates.filter(function(item) {
-      if (item.hasOwnProperty('is_ad')) {
+      if (item.goto == "special" || item.goto == "game" || item.goto == "cm") {
         return false;
       }
       return true;
     });
   }
   delete body.data.cms;
-}
-
-
-if (url.indexOf(path5) != -1) {
+} else if (url.indexOf(path5) != -1) {
   body.data = null;
 }
 
@@ -175,9 +257,7 @@ if (url.indexOf(path6) != -1) {
   if (body.hasOwnProperty('data')) {
     delete body.data.notice;
   }
-}
-
-if (url.indexOf(path7) != -1) {
+} else if (url.indexOf(path7) != -1) {
   let blacklist = [];
   body.data = body.data.filter(function(item) {
     if (blacklist.includes(item.name)) {
@@ -185,27 +265,18 @@ if (url.indexOf(path7) != -1) {
     }
     return true;
   });
-}
-
-if (url.indexOf(path8) != -1) {
-  let blacklist = [];
+} else if (url.indexOf(path8) != -1) {
   body.data = body.data.filter(function(item) {
-    if (blacklist.includes(item.right_desc_1) || item.card_type !== "small_cover_v5") {
+    if (item.tid == 65546 || item.tid == 65561 || item.tid == 65553 || item.tid == 65539) {
       return false;
     }
     return true;
   });
-}
-
-if (url.indexOf(path9) != -1) {
+} else if (url.indexOf(path9) != -1) {
   body.data.activity_banner_info = null;
-}
-
-if (url.indexOf(path10) != -1) {
+} else if (url.indexOf(path10) != -1) {
   body.data.teenagers_status = 0;
-}
-
-if (url.indexOf(path11) != -1) {
+} else if (url.indexOf(path11) != -1) {
   body.data.ipad_upper_sections = [{
       "title": "投稿",
       "icon": "http://i0.hdslb.com/bfs/archive/86a8fdc40f4a5842d9b6454dead1f049db64ffc5.png",
