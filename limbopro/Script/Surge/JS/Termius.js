@@ -1,19 +1,13 @@
-/*
-Termius unlocks local pro v 
-(From the author @Maasea)
+var body = $response.body;
+var url = $request.url;
 
-Surge4:
-http-response https:\/\/api\.termius\.com\/api\/v3\/bulk\/account\/ requires-body=1,max-size=0,script-path=https://raw.githubusercontent.com/NobyDa/Script/master/Surge/JS/Termius.js
+const path1 = '/api/1481166/';
 
-QX：
-https:\/\/api\.termius\.com\/api\/v3\/bulk\/account\/ url script-response-body https://raw.githubusercontent.com/NobyDa/Script/master/Surge/JS/Termius.js
+let obj = JSON.parse(body);
 
-Surge & QX MITM = api.termius.com
-*/
+if (url.indexOf(path1) != -1) {
+	obj.extra["plan"] = Premium;
+	body = JSON.stringify(obj);  
+ }
 
-let obj=JSON.parse($response.body)
-obj.account["pro_mode"] = true;
-obj.account["plan_type"] = "Premium";
-obj.account["user_type"] = "Premium";
-obj.account["current_period"]["until"] = "2299-10-10T03:27:34";
-$done({body:JSON.stringify(obj)})
+$done({body});
